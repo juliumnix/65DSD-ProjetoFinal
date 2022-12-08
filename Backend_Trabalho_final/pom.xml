@@ -20,6 +20,13 @@
             <version>5.9.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.appium/java-client -->
+        <dependency>
+            <groupId>io.appium</groupId>
+            <artifactId>java-client</artifactId>
+            <version>8.2.1</version>
+        </dependency>
+
     </dependencies>
 
     <properties>

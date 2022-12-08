@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="marrom_escuro">#71443f</color>
+    <color name="marrom_claro">#8c7c62</color>
+    <color name="verde_escuro">#9dc19d</color>
+    <color name="verde_claro">#b5cea4</color>
+    <color name="bege">#d3d5b0</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

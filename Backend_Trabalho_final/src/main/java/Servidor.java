@@ -29,14 +29,14 @@ public class Servidor {
         MessageHandler.loginHandler(comandoSeparado,usuariosLogados, socket, PORTA, listaDeIps);
     }
 
-    public void runList() throws IOException {
+    public void runList() throws IOException, InterruptedException {
         Socket socket = serverSocket.accept();
         byte[] dadosBrutos = new byte[1024];
         int qtdBytesLidos = socket.getInputStream().read(dadosBrutos);
         String comando = new String(dadosBrutos, 0, qtdBytesLidos);
         System.out.println(comando);
         String[] comandoSeparado = comando.split(";");
-        MessageHandler.listarHandler(comandoSeparado, usuariosLogados,socket);
+        MessageHandler.listarHandler(comandoSeparado, usuariosLogados,socket, listaDeIps);
     }
 
     public void runSair() throws IOException {
@@ -49,7 +49,7 @@ public class Servidor {
         MessageHandler.sairHandler(comandoSeparado, usuariosLogados, socket, listaDeIps);
     }
 
-    public void runMensagem() throws IOException {
+    public void runMensagem() throws IOException, InterruptedException {
         Socket socket = serverSocket.accept();
         byte[] dadosBrutos = new byte[1024];
         int qtdBytesLidos = socket.getInputStream().read(dadosBrutos);
@@ -60,39 +60,44 @@ public class Servidor {
     }
 
 
-
     public void runServidor(){
         try{
             System.out.println("Server Iniciado");
             while (true){
                 Socket socket = serverSocket.accept();
-                byte[] dadosBrutos = new byte[1024];
-                int qtdBytesLidos = socket.getInputStream().read(dadosBrutos);
-                String comando = new String(dadosBrutos, 0, qtdBytesLidos);
-                System.out.println(comando);
-                String[] comandoSeparado = comando.split(";");
-                switch (comandoSeparado[0]){
-                    case "nome":
-                        MessageHandler.loginHandler(comandoSeparado,usuariosLogados, socket, PORTA, listaDeIps);
-                        PORTA++;
-                        break;
-                    default:
-                        switch (comandoSeparado[1]){
-                            case "listar":
-                                MessageHandler.listarHandler(comandoSeparado, usuariosLogados,socket);
-                                break;
-                            case "sair":
-                                MessageHandler.sairHandler(comandoSeparado, usuariosLogados, socket, listaDeIps);
-                                break;
-                            case "mensagem":
-                                MessageHandler.mensagemHandler(comandoSeparado,socket,listaDeIps);
-                                break;
-                            default:
-                                socket.getOutputStream().write("Mensagem inválida".getBytes());
-                                socket.close();
-                                break;
-                        }
-                }
+               new Thread(() -> {
+                   try {
+                       byte[] dadosBrutos = new byte[1024];
+                       int qtdBytesLidos = socket.getInputStream().read(dadosBrutos);
+                       String comando = new String(dadosBrutos, 0, qtdBytesLidos);
+                       System.out.println(comando);
+                       String[] comandoSeparado = comando.split(";");
+                       switch (comandoSeparado[0]){
+                           case "nome":
+                               MessageHandler.loginHandler(comandoSeparado,usuariosLogados, socket, PORTA, listaDeIps);
+                               PORTA++;
+                               break;
+                           default:
+                               switch (comandoSeparado[1]){
+                                   case "listar":
+                                       MessageHandler.listarHandler(comandoSeparado, usuariosLogados,socket, listaDeIps);
+                                       break;
+                                   case "sair":
+                                       MessageHandler.sairHandler(comandoSeparado, usuariosLogados, socket, listaDeIps);
+                                       return;
+                                   case "mensagem":
+                                       MessageHandler.mensagemHandler(comandoSeparado,socket,listaDeIps);
+                                       break;
+                                   default:
+                                       socket.getOutputStream().write("Mensagem inválida".getBytes());
+                                       socket.close();
+                                       break;
+                               }
+                       }
+                   }catch (IOException | InterruptedException e){
+                       e.printStackTrace();
+                   }
+               }).start();
 
             }
         } catch (IOException e) {

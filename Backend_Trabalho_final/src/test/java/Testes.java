@@ -36,7 +36,7 @@ public class Testes {
     }
 
     @Test
-    void testeListar() throws IOException{
+    void testeListar() throws IOException, InterruptedException {
         Cliente cliente = new Cliente(new InputMessage() {
             @Override
             public String getMessage() {
@@ -56,13 +56,12 @@ public class Testes {
         cliente.sendNomeToServidor(socket, "nome;julio");
         servidor.runLogin();
         cliente.reciverNomeToServidor(socket);
+        cliente.listenerPing();
         socket.close();
-//        Socket socketListar = new Socket(cliente.getIP(), 3500);
         cliente.sendMessage("listar");
         servidor.runList();
         Assertions.assertEquals(cliente.reciveMessage(), "julio//");
         cliente.closeServerSocket();
-//        socketListar.close();
         serverSocket.close();
     }
 
@@ -88,17 +87,15 @@ public class Testes {
         servidor.runLogin();
         cliente.reciverNomeToServidor(socket);
         socket.close();
-//        Socket socketListar = new Socket(cliente.getIP(), 3500);
         cliente.sendMessage("sair");
         servidor.runSair();
         Assertions.assertEquals(cliente.reciveMessage(), "saindo...");
         cliente.closeServerSocket();
-//        socketListar.close();
         serverSocket.close();
     }
 
     @Test
-    void testeEnviarMensagem() throws IOException {
+    void testeEnviarMensagem() throws IOException, InterruptedException {
         Cliente cliente = new Cliente(new InputMessage() {
             @Override
             public String getMessage() {
@@ -118,8 +115,8 @@ public class Testes {
         cliente.sendNomeToServidor(socket, "nome;julio");
         servidor.runLogin();
         cliente.reciverNomeToServidor(socket);
+        cliente.listenerPing();
         socket.close();
-//        Socket socketListar = new Socket(cliente.getIP(), 3365);
         cliente.sendMessage("mensagem;oiiiiiiiii");
         servidor.runMensagem();
         Assertions.assertEquals(cliente.reciveMessage(), "Mensagem enviada com sucesso");
@@ -146,13 +143,12 @@ public class Testes {
         Servidor servidor = new Servidor(serverSocket);
         Socket socket = new Socket(cliente.getIP(), 3500);
         Assertions.assertEquals(cliente.sendNomeToServidor(socket, "julio"), false);
-//        cliente.sendNomeToServidor(socket, "julio");
         socket.close();
         serverSocket.close();
     }
 
     @Test
-    void testeListarError() throws IOException {
+    void testeListarError() throws IOException, InterruptedException {
         Cliente cliente = new Cliente(new InputMessage() {
             @Override
             public String getMessage() {
@@ -172,13 +168,12 @@ public class Testes {
         cliente.sendNomeToServidor(socket, "nome;julio");
         servidor.runLogin();
         cliente.reciverNomeToServidor(socket);
+        cliente.listenerPing();
         socket.close();
-//        Socket socketListar = new Socket(cliente.getIP(), 3500);
         cliente.sendMessage("listar usuarios");
         servidor.runList();
         Assertions.assertEquals(cliente.reciveMessage(), "Mensagem inválida");
         cliente.closeServerSocket();
-//        socketListar.close();
         serverSocket.close();
     }
 
@@ -204,17 +199,15 @@ public class Testes {
         servidor.runLogin();
         cliente.reciverNomeToServidor(socket);
         socket.close();
-//        Socket socketListar = new Socket(cliente.getIP(), 3500);
         cliente.sendMessage("sair do sistemas");
         servidor.runSair();
         Assertions.assertEquals(cliente.reciveMessage(), "Mensagem inválida");
         cliente.closeServerSocket();
-//        socketListar.close();
         serverSocket.close();
     }
 
     @Test
-    void testeEnviarMensagemError() throws IOException {
+    void testeEnviarMensagemError() throws IOException, InterruptedException {
         Cliente cliente = new Cliente(new InputMessage() {
             @Override
             public String getMessage() {
@@ -234,13 +227,12 @@ public class Testes {
         cliente.sendNomeToServidor(socket, "nome;julio");
         servidor.runLogin();
         cliente.reciverNomeToServidor(socket);
+        cliente.listenerPing();
         socket.close();
-//        Socket socketListar = new Socket(cliente.getIP(), 3500);
         cliente.sendMessage("mensagemTeste;oiii");
         servidor.runMensagem();
         Assertions.assertEquals(cliente.reciveMessage(), "Mensagem inválida");
         cliente.closeServerSocket();
-//        socketListar.close();
         serverSocket.close();
     }
 

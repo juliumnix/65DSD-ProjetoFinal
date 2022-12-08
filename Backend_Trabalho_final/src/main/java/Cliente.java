@@ -11,6 +11,7 @@ public class Cliente{
     private String IP;
     private ServerSocket serverSocket;
     private Socket socket;
+    private ServerSocket serverSocketPing;
 
     public Cliente(InputMessage inputMessage, NotifyInView notifyInView)  {
         this.inputMessage = inputMessage;
@@ -53,6 +54,10 @@ public class Cliente{
 
     public void setPorta(int porta) {
         this.porta = porta;
+    }
+
+    public String getNome() {
+        return nome;
     }
 
     public NotifyInView getNotifyInView() {
@@ -114,6 +119,21 @@ public class Cliente{
         setServerSocket(serverSocket);
     }
 
+    public void listenerPing(){
+        new Thread(() -> {
+            try {
+                serverSocketPing = new ServerSocket(porta + 10000);
+                while (!serverSocketPing.isClosed()) {
+                    Socket socket = serverSocketPing.accept();
+                    String retorno = getNome()+";"+socket.getLocalAddress() + ";" + porta;
+                    socket.getOutputStream().write(retorno.getBytes());
+                    socket.close();
+                }
+            } catch (IOException e) {
+            }
+        }).start();
+    }
+
     public void listenerMensagens(){
         new Thread(() -> {
             while(!serverSocket.isClosed()){
@@ -167,18 +187,21 @@ public class Cliente{
                 break;
             }
         }
-        cliente.createServerSocket();
         cliente.listenerMensagens();
+        cliente.listenerPing();
         while (true){
             System.out.println("Digite um comando");
             cliente.sendMessage(cliente.getInputMessage().getMessage());
             String retorno = cliente.reciveMessage();
             if(retorno.equalsIgnoreCase("saindo...")){
                 cliente.getServerSocket().close();
+                cliente.serverSocket.close();
+                cliente.serverSocketPing.close();
                 break;
             }
             cliente.getNotifyInView().notifyInView(retorno);
         }
     }
+
 
 }
